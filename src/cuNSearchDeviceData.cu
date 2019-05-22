@@ -26,6 +26,9 @@ namespace cuNSearch
 {
 	void cuNSearchDeviceData::computeMinMax(PointSet &pointSet)
 	{
+		if (pointSet.n_points() == 0)
+			return;
+			
 		auto pointSetImpl = pointSet.impl.get();
 
 		Int3 data[2];
@@ -76,6 +79,9 @@ namespace cuNSearch
 
 	void cuNSearchDeviceData::computeCellInformation(PointSet &pointSet)
 	{
+		if (pointSet.n_points() == 0)
+			return;
+	
 		auto pointSetImpl = pointSet.impl.get();
 		Real3 sceneMin = pointSetImpl->Min;
 		Real3 sceneMax = pointSetImpl->Max;
@@ -169,6 +175,9 @@ namespace cuNSearch
 
 	void cuNSearchDeviceData::computeNeighborhood(PointSet &queryPointSet, PointSet &pointSet, uint neighborListEntry)
 	{
+		if (queryPointSet.n_points() == 0)
+			return;
+	
 		auto queryPointSetImpl = queryPointSet.impl.get();
 		auto pointSetImpl = pointSet.impl.get();
 
