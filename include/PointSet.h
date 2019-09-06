@@ -79,6 +79,19 @@ public:
 		const auto &neighborSet = neighbors[point_set];
 		return neighborSet.Neighbors[neighborSet.Offsets[i] + k];
 	}
+
+	/**
+	* Fetches pointer to neighbors of point i in the given point set.
+	* @param point_set Point set index of other point set where neighbors have been searched.
+	* @param i Point index for which the neighbor id should be returned.
+	* @returns Pointer to ids of neighboring points of i in point set point_set.
+	*/
+	inline unsigned int * neighbor_list(unsigned int point_set, unsigned int i) const 
+	{
+		//Return index of the k-th neighbor to point i (of the given point set)
+		const auto &neighborSet = neighbors[point_set];
+		return &neighborSet.Neighbors[neighborSet.Offsets[i]];
+	}
 	
 	/**
 	* @returns the number of points contained in the point set.

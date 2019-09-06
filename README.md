@@ -1,7 +1,7 @@
 # cuNSearch
 A C++/CUDA library to efficiently compute neighborhood information on the GPU for 3D point clouds within a fixed radius. Suitable for many applications, e.g. neighborhood search for SPH fluid simulations.
 
-The library interface is similar to CompactNSearch (https://github.com/InteractiveComputerGraphics/CompactNSearch)
+The library interface is similar to the CPU neighborhood search [CompactNSearch](https://github.com/InteractiveComputerGraphics/CompactNSearch).
 ## Libraries using cuNSearch
 
 * [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH) - A C++ library for the physically-based simulation of fluids using Smoothed Particle Hydrodynamics (see screenshot)
