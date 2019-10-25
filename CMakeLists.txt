@@ -49,7 +49,7 @@ set (SOURCE_FILES
 	src/cuNSearch.cu
 	src/cuNSearchDeviceData.cu
 	src/cuNSearchKernels.cu
-	Utils/cuda_helper.cpp
+	Utils/cuda_helper.cu
 	Utils/Timing.cpp
 	Utils/IDFactory.cpp
 )
