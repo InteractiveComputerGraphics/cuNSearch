@@ -18,6 +18,11 @@ if(CUNSEARCH_USE_DOUBLE_PRECISION)
 	add_compile_options(-DCUNSEARCH_USE_DOUBLE_PRECISION)
 endif(CUNSEARCH_USE_DOUBLE_PRECISION)
 
+OPTION(BUILD_AS_SHARED_LIBS "Build all the libraries as shared" OFF)
+if (BUILD_AS_SHARED_LIBS)
+	add_definitions( -DBUILD_AS_SHARED_LIBS)
+endif (BUILD_AS_SHARED_LIBS)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_DEBUG_POSTFIX "_d")
@@ -54,7 +59,11 @@ set (SOURCE_FILES
 	Utils/IDFactory.cpp
 )
 
-add_library(cuNSearch STATIC ${INCLUDE_HEADERS} ${HEADER_FILES} ${SOURCE_FILES})
+if(BUILD_AS_SHARED_LIBS)
+	add_library(cuNSearch SHARED ${INCLUDE_HEADERS} ${HEADER_FILES} ${SOURCE_FILES})
+else()
+	add_library(cuNSearch STATIC ${INCLUDE_HEADERS} ${HEADER_FILES} ${SOURCE_FILES})
+endif()
 
 target_include_directories(cuNSearch PUBLIC
 	"include"
