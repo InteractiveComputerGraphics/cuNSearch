@@ -20,7 +20,6 @@ endif(CUNSEARCH_USE_DOUBLE_PRECISION)
 
 OPTION(BUILD_AS_SHARED_LIBS "Build all the libraries as shared" OFF)
 if (BUILD_AS_SHARED_LIBS)
-	add_definitions( -DBUILD_AS_SHARED_LIBS)
 	if(WIN32)
 		set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON CACHE BOOL "Export all symbols")
 	endif(WIN32)	
