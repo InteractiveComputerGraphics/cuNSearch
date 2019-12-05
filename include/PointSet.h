@@ -80,6 +80,41 @@ public:
 		return neighborSet.Neighbors[neighborSet.Offsets[i] + k];
 	}
 
+	inline uint n_neighborsets()
+	{
+		return neighbors.size();
+	}
+
+	inline uint neighbor_count(const uint i)
+	{
+		return neighbors[i].NeighborCountAllocationSize;
+	}
+
+	inline uint particle_count(const uint i)
+	{
+		return neighbors[i].ParticleCountAllocationSize;
+	}
+
+	inline const uint* neighbor_indices(const uint i)
+	{
+		return neighbors[i].Neighbors;
+	}
+
+	inline const uint* neighbor_counts(const uint i)
+	{
+		return neighbors[i].Counts;
+	}
+
+	inline const uint* neighbor_offsets(const uint i)
+	{
+		return neighbors[i].Offsets;
+	}
+
+	PointSetImplementation *getPointSetImplementation()
+	{
+		return impl.get();
+	}
+
 	/**
 	* Fetches pointer to neighbors of point i in the given point set.
 	* @param point_set Point set index of other point set where neighbors have been searched.
