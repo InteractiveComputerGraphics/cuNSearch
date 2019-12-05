@@ -2,7 +2,7 @@
 #include "Types.h"
 #include "GridInfo.h"
 #include <thrust/device_vector.h>
-#include "cuda_helper.h"
+#include "../Utils/cuda_helper.cuh"
 
 namespace cuNSearch
 {
@@ -30,6 +30,21 @@ namespace cuNSearch
 		}
 
 		void copyToDevice();
+
+		thrust::device_vector<Real3> &getParticles()
+		{
+			return d_Particles;
+		}
+
+		int getThreadsPerBlock()
+		{
+			return ThreadsPerBlock;
+		}
+
+		uint getNumberOfBlocks()
+		{
+			return BlockStartsForParticles;
+		}
 
 	private:
 		friend NeighborhoodSearch;
