@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
-#include "../Utils/cuda_helper.cuh"
+#include "cuda_helper.cuh"
 
 #include "Common.h"
 
