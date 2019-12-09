@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include "../Utils/cuda_helper.cuh"
 
 #include "Common.h"
 
@@ -35,6 +36,13 @@ class PointSet
 		uint *Offsets;
 		uint *Neighbors;
 
+		//#ifdef GPU_NEIGHBORHOOD_SEARCH
+		// Same data as in pinned memory. Used to avoid unnecessary data copies in the SPliSHSPlaSH-GPU implementation
+		uint *d_Counts;
+		uint *d_Offsets;
+		uint *d_Neighbors;
+		//#endif
+
 		NeighborSet()
 		{
 			NeighborCountAllocationSize = 0u;
@@ -42,6 +50,17 @@ class PointSet
 			Counts = nullptr;
 			Offsets = nullptr;
 			Neighbors = nullptr;
+
+			d_Counts = nullptr;
+			d_Offsets = nullptr;
+			d_Neighbors = nullptr;
+		}
+
+		~NeighborSet()
+		{
+			CudaHelper::CudaFree(d_Counts);
+			CudaHelper::CudaFree(d_Offsets);
+			CudaHelper::CudaFree(d_Neighbors);
 		}
 	};
 
