@@ -2,7 +2,7 @@
 #include "Types.h"
 #include "GridInfo.h"
 #include <thrust/device_vector.h>
-#include "cuda_helper.cuh"
+#include "../Utils/cuda_helper.h"
 
 namespace cuNSearch
 {
