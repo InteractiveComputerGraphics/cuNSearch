@@ -104,29 +104,19 @@ public:
 		return neighbors.size();
 	}
 
-	inline uint neighbor_count(const uint i)
-	{
-		return neighbors[i].NeighborCountAllocationSize;
-	}
-
-	inline uint particle_count(const uint i)
-	{
-		return neighbors[i].ParticleCountAllocationSize;
-	}
-
 	inline const uint* neighbor_indices(const uint i)
 	{
-		return neighbors[i].Neighbors;
+		return neighbors[i].d_Neighbors;
 	}
 
 	inline const uint* neighbor_counts(const uint i)
 	{
-		return neighbors[i].Counts;
+		return neighbors[i].d_Counts;
 	}
 
 	inline const uint* neighbor_offsets(const uint i)
 	{
-		return neighbors[i].Offsets;
+		return neighbors[i].d_Offsets;
 	}
 
 	PointSetImplementation *getPointSetImplementation()
