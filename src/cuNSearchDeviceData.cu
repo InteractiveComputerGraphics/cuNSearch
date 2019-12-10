@@ -215,9 +215,9 @@ namespace cuNSearch
 
 		//Prefix sum over neighbor counts
 		thrust::exclusive_scan(
-			d_NeighborCounts,
-			d_NeighborCounts + particleCount,
-			d_NeighborWriteOffsets);
+			thrust::device_ptr<uint>(d_NeighborCounts),
+			thrust::device_ptr<uint>(d_NeighborCounts) + particleCount,
+			thrust::device_ptr<uint>(d_NeighborWriteOffsets));
 
 		CudaHelper::DeviceSynchronize();
 
