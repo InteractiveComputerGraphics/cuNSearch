@@ -104,17 +104,17 @@ public:
 		return neighbors.size();
 	}
 
-	inline const uint* neighbor_indices(const uint i)
+	inline uint* neighbor_indices(const uint i)
 	{
 		return neighbors[i].d_Neighbors;
 	}
 
-	inline const uint* neighbor_counts(const uint i)
+	inline uint* neighbor_counts(const uint i)
 	{
 		return neighbors[i].d_Counts;
 	}
 
-	inline const uint* neighbor_offsets(const uint i)
+	inline uint* neighbor_offsets(const uint i)
 	{
 		return neighbors[i].d_Offsets;
 	}
