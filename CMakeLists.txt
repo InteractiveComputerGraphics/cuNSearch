@@ -34,6 +34,7 @@ set (INCLUDE_HEADERS
 	include/ActivationTable.h
 	include/Common.h
 	include/cuNSearch.h
+	Utils/cuda_helper.h
 )
 
 set (HEADER_FILES

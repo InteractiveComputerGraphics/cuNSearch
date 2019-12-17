@@ -19,7 +19,7 @@
 
 #include "PointSetImplementation.h"
 #include "GridInfo.h"
-#include "cuda_helper.h"
+#include "cuda_helper.cuh"
 #include "cuNSearchKernels.cuh"
 
 namespace cuNSearch
@@ -178,13 +178,17 @@ namespace cuNSearch
 		if (queryPointSet.n_points() == 0)
 			return;
 	
+		auto &neighborSet = queryPointSet.neighbors[neighborListEntry];
 		auto queryPointSetImpl = queryPointSet.impl.get();
 		auto pointSetImpl = pointSet.impl.get();
 
 		uint particleCount = static_cast<uint>(queryPointSet.n_points());
 
 		USE_TIMING(Timing::startTiming("Execute kNeighborCount"));
-		d_NeighborCounts.resize(particleCount);
+
+		uint* &d_NeighborCounts = neighborSet.d_Counts;
+		CudaHelper::CudaFree(d_NeighborCounts);
+		CudaHelper::CudaMalloc(&d_NeighborCounts, particleCount);
 
 		kComputeCounts << <queryPointSetImpl->BlockStartsForParticles, queryPointSetImpl->ThreadsPerBlock >> > (
 			(Real3*)CudaHelper::GetPointer(queryPointSetImpl->d_Particles),
@@ -195,7 +199,7 @@ namespace cuNSearch
 			CudaHelper::GetPointer(pointSetImpl->d_CellOffsets),
 			CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
 
-			CudaHelper::GetPointer(d_NeighborCounts),
+			d_NeighborCounts,
 			CudaHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
 			);
 
@@ -205,23 +209,28 @@ namespace cuNSearch
 		USE_TIMING(Timing::stopTiming(PRINT_STATS));
 		USE_TIMING(Timing::startTiming("Execute exclusive_scan over counts"));
 
-		d_NeighborWriteOffsets.resize(particleCount);
+		uint* &d_NeighborWriteOffsets = neighborSet.d_Offsets;
+		CudaHelper::CudaFree(d_NeighborWriteOffsets);
+		CudaHelper::CudaMalloc(&d_NeighborWriteOffsets, particleCount);
 
 		//Prefix sum over neighbor counts
 		thrust::exclusive_scan(
-			d_NeighborCounts.begin(),
-			d_NeighborCounts.end(),
-			d_NeighborWriteOffsets.begin());
+			thrust::device_ptr<uint>(d_NeighborCounts),
+			thrust::device_ptr<uint>(d_NeighborCounts) + particleCount,
+			thrust::device_ptr<uint>(d_NeighborWriteOffsets));
 
 		CudaHelper::DeviceSynchronize();
 
 		//Compute total amount of neighbors
 		uint lastOffset = 0;
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborWriteOffsets) + particleCount - 1, &lastOffset, 1);
+		CudaHelper::MemcpyDeviceToHost( d_NeighborWriteOffsets + particleCount - 1, &lastOffset, 1);
 		uint lastParticleNeighborCount = 0;
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborCounts) + particleCount - 1, &lastParticleNeighborCount, 1);
+		CudaHelper::MemcpyDeviceToHost( d_NeighborCounts + particleCount - 1, &lastParticleNeighborCount, 1);
 		uint totalNeighborCount = lastOffset + lastParticleNeighborCount;
-		d_Neighbors.resize(totalNeighborCount);
+
+		uint* &d_Neighbors = neighborSet.d_Neighbors;
+		CudaHelper::CudaFree(d_Neighbors);
+		CudaHelper::CudaMalloc(&d_Neighbors, totalNeighborCount);
 
 		CudaHelper::DeviceSynchronize();
 
@@ -237,8 +246,7 @@ namespace cuNSearch
 			CudaHelper::GetPointer(pointSetImpl->d_CellOffsets),
 			CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
 
-			CudaHelper::GetPointer(d_NeighborWriteOffsets),
-			CudaHelper::GetPointer(d_Neighbors),
+			d_NeighborWriteOffsets, d_Neighbors,
 			CudaHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
 			);
 
@@ -248,8 +256,6 @@ namespace cuNSearch
 
 		//Copy data to host
 		USE_TIMING(Timing::startTiming("Neighbor copy from device to host - resize"));
-
-		auto &neighborSet = queryPointSet.neighbors[neighborListEntry];
 
 		if (neighborSet.NeighborCountAllocationSize < totalNeighborCount)
 		{
@@ -285,9 +291,9 @@ namespace cuNSearch
 			printf("Expected amount: %f MB \n", bytesToCopy / (1024.0f * 1024.0f));
 		}
 
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_Neighbors), neighborSet.Neighbors, totalNeighborCount);
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborCounts), neighborSet.Counts, particleCount);
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborWriteOffsets), neighborSet.Offsets, particleCount);
+		CudaHelper::MemcpyDeviceToHost( d_Neighbors, neighborSet.Neighbors, totalNeighborCount);
+		CudaHelper::MemcpyDeviceToHost( d_NeighborCounts, neighborSet.Counts, particleCount);
+		CudaHelper::MemcpyDeviceToHost( d_NeighborWriteOffsets, neighborSet.Offsets, particleCount);
 
 		USE_TIMING(Timing::stopTiming(PRINT_STATS));
 	}
