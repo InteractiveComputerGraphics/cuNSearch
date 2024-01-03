@@ -40,7 +40,7 @@ namespace cuNSearch
 {
 	NeighborhoodSearch::NeighborhoodSearch(Real searchRadius)
 	{
-		deviceData = std::make_unique<cuNSearchDeviceData>(searchRadius);
+		deviceData = make_unique<cuNSearchDeviceData>(searchRadius);
 		set_radius(searchRadius);
 	}
 
