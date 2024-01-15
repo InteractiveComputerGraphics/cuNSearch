@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include "cuda_helper.h"
 
 #include "Common.h"
 
@@ -35,6 +36,13 @@ class PointSet
 		uint *Offsets;
 		uint *Neighbors;
 
+		//#ifdef GPU_NEIGHBORHOOD_SEARCH
+		// Same data as in pinned memory. Used to avoid unnecessary data copies in the SPliSHSPlaSH-GPU implementation
+		uint *d_Counts;
+		uint *d_Offsets;
+		uint *d_Neighbors;
+		//#endif
+
 		NeighborSet()
 		{
 			NeighborCountAllocationSize = 0u;
@@ -42,6 +50,17 @@ class PointSet
 			Counts = nullptr;
 			Offsets = nullptr;
 			Neighbors = nullptr;
+
+			d_Counts = nullptr;
+			d_Offsets = nullptr;
+			d_Neighbors = nullptr;
+		}
+
+		~NeighborSet()
+		{
+			CudaHelper::CudaFree(d_Counts);
+			CudaHelper::CudaFree(d_Offsets);
+			CudaHelper::CudaFree(d_Neighbors);
 		}
 	};
 
@@ -78,6 +97,31 @@ public:
 		//Return index of the k-th neighbor to point i (of the given point set)
 		const auto &neighborSet = neighbors[point_set];
 		return neighborSet.Neighbors[neighborSet.Offsets[i] + k];
+	}
+
+	inline uint n_neighborsets()
+	{
+		return neighbors.size();
+	}
+
+	inline uint* neighbor_indices(const uint i)
+	{
+		return neighbors[i].d_Neighbors;
+	}
+
+	inline uint* neighbor_counts(const uint i)
+	{
+		return neighbors[i].d_Counts;
+	}
+
+	inline uint* neighbor_offsets(const uint i)
+	{
+		return neighbors[i].d_Offsets;
+	}
+
+	PointSetImplementation *getPointSetImplementation()
+	{
+		return impl.get();
 	}
 
 	/**

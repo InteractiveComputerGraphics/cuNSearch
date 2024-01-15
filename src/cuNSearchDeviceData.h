@@ -38,9 +38,9 @@ namespace cuNSearch
 		thrust::device_vector<Int3> d_MinMax;
 		thrust::device_vector<uint> d_TempSortIndices;
 
-		//Device neighbor buffers (only temporary used: after the computation the data is copied to the host)
-		thrust::device_vector<uint> d_Neighbors;
-		thrust::device_vector<uint> d_NeighborCounts;
-		thrust::device_vector<uint> d_NeighborWriteOffsets;
+		// only temporary used. After neighborhood computation pointer is handed over to point set
+/* 		uint* &d_Neighbors;
+		uint* &d_NeighborCounts;
+		uint* &d_NeighborWriteOffsets; */
 	};
 };

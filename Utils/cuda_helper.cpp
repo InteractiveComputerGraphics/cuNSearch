@@ -1,4 +1,4 @@
-#include "cuda_helper.cuh"
+#include "cuda_helper.h"
 #include <cuda_runtime.h>
 
 CUDAException::CUDAException(const char *_const_Message) : std::runtime_error(_const_Message)
@@ -42,7 +42,7 @@ void CudaHelper::MemcpyHostToDevice(void* host, void* device, size_t size)
 	cudaError_t cudaStatus = cudaMemcpy(device, host, size, cudaMemcpyHostToDevice);
 	if (cudaStatus != cudaSuccess)
 	{
-		throw CUDAMemCopyException("cudaMemcpy() from host to device failed!");
+		throw CUDAMemCopyException("cudaMemcpy() failed!");
 	}
 }
 
@@ -51,7 +51,7 @@ void CudaHelper::MemcpyDeviceToHost(void* device, void* host, size_t size)
 	cudaError_t cudaStatus = cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost);
 	if (cudaStatus != cudaSuccess)
 	{
-		throw CUDAMemCopyException("cudaMemcpy() from device to host failed!");
+		throw CUDAMemCopyException("cudaMemcpy() failed!");
 	}
 }
 
@@ -70,7 +70,7 @@ void CudaHelper::CudaMalloc(void** src, size_t size)
 	cudaError_t cudaStatus = cudaMalloc(src, size);
 	if (cudaStatus != cudaSuccess)
 	{
-		printf("Error: %s : ", cudaGetErrorString(cudaStatus));
+		printf("Error in CudaMalloc: %s : ", cudaGetErrorString(cudaStatus));
 		throw cudaErrorMemoryAllocation;
 	}
 }

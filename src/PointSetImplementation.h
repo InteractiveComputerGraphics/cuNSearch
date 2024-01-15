@@ -31,6 +31,21 @@ namespace cuNSearch
 
 		void copyToDevice();
 
+		thrust::device_vector<Real3> &getParticles()
+		{
+			return d_Particles;
+		}
+
+		int getThreadsPerBlock()
+		{
+			return ThreadsPerBlock;
+		}
+
+		uint getNumberOfBlocks()
+		{
+			return BlockStartsForParticles;
+		}
+
 	private:
 		friend NeighborhoodSearch;
 		friend cuNSearchDeviceData;
